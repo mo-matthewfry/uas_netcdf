@@ -93,6 +93,7 @@ def create_netcdf(args):
 
     return ncfile
 
+
 def main():
     """
     main
