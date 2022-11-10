@@ -22,6 +22,8 @@ def parse_args(args):
     parser.add_argument("--datadir", default="../data/", type=str)
     parser.add_argument("--outdir", default="../data/", type=str)
     parser.add_argument("--save_file", default="test.nc", type=str)
+    parser.add_argument("--obs_len", default=0, type=int)
+    parser.add_argument("--traj_len", default=None, type=int)
 
     args = parser.parse_args(args)
 
@@ -44,7 +46,7 @@ def add_var_metadata(var, std_name, long_name, units,
         var.axis = axis
 
 
-def create_netcdf(args):
+def create_netcdf(args, obs_len, traj_len=None):
 
     filename = os.path.join(args.datadir, args.save_file)
 
@@ -61,17 +63,34 @@ def create_netcdf(args):
     ncfile.flight_id = ""
 
     #---DIMENSIONS---#
-    obs = ncfile.createDimension('obs', 42)
+    obs = ncfile.createDimension('obs', obs_len)
+    shape = ('obs',)
+
+    # Set up the optional trajectory dimension if requried
+    if traj_len is not None:
+
+        #---DIMENSIONS---#
+        trajectory_dim = ncfile.createDimension('trajectory', traj_len)
+
+        #---TRAJECTORY VARIABLES---#
+        trajectory_var = ncfile.createVariable('trajectory', 'S1', ('trajectory',))
+        trajectory_var.cf_role = "trajectory_id"
+        trajectory_var.long_name = "trajectory name"
+
+        trajectory_info = ncfile.createVariable('trajectory_info', np.int64, ('trajectory',))
+        trajectory_info.long_name = "some kind of trajectory info"
+
+        shape = ('trajectory', 'obs',)
 
     #---COORDINATE VARIABLES---#
-    time = ncfile.createVariable('time', np.float64, ('obs',))
-    lat = ncfile.createVariable('lat', np.float32, ('obs',))
-    lon = ncfile.createVariable('lon', np.float32, ('obs',))
-    z = ncfile.createVariable('z', np.float32, ('obs',))
+    time = ncfile.createVariable('time', np.float64, shape)
+    lat = ncfile.createVariable('lat', np.float32, shape)
+    lon = ncfile.createVariable('lon', np.float32, shape)
+    z = ncfile.createVariable('z', np.float32, shape)
 
     #---GEOPHYSICAL VARIABLES---#
-    temp = ncfile.createVariable('temp', np.float32, ('obs',))
-    rh = ncfile.createVariable('rh', np.float32, ('obs',))
+    temp = ncfile.createVariable('temp', np.float32, shape)
+    rh = ncfile.createVariable('rh', np.float32, shape)
 
     #---COORDINATE VARIABLE METADATA---#
     add_var_metadata(time, "time", "time", "days since 1970-01-01 00:00:00")
@@ -97,7 +116,7 @@ def main():
 
     args = parse_args(sys.argv[1:])
 
-    ncfile = create_netcdf(args)
+    ncfile = create_netcdf(args, args.obs_len, args.traj_len)
 
     print(ncfile)
 
