@@ -44,10 +44,6 @@ def add_var_metadata(var, std_name, long_name, units,
         var.axis = axis
 
 
-
-
-
-
 def create_netcdf(args):
 
     filename = os.path.join(args.datadir, args.save_file)
