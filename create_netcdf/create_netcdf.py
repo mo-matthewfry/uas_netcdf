@@ -9,7 +9,7 @@ and also to add data to a variable/variables.
 
 Usage in other files:
  - Import parse_args and NetCDF class from create_netcdf.
- - Create a ncfile object.
+ - Create an ncfile object.
  - Use the create() method to create a template netcdf file
    based upon the passed command line arguements.
  - Add data (from a separate dataframe or csv) using the add_data()
