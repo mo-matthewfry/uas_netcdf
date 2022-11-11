@@ -34,8 +34,9 @@ def rename_columns(data):
     Renaming the variables
     """
 
-    data.rename(columns={"Height(m)":"z",
-                         "Pressure":"pressure",
+    data.rename(columns={"timestamp":"time",
+                         "Height(m)":"z",
+                         "Pressure":"pres",
                          "Temperature(C) (Thermistor(2))":"temp",
                          "RH(%) (HYT271(2))":"rh"
                         }, inplace=True)
@@ -46,8 +47,27 @@ def save_to_file(data, filename):
     Reorder columns and save to file
     """
 
-    cols = ["timestamp", "z", "pressure", "temp", "rh"]
+    cols = ["time", "z", "pres", "temp", "rh"]
+
+    data["z"] /= 1000.0
+    data["temp"] += 273.15
+
     data[cols].to_csv(filename, index=False)
+
+    return data[cols]
+
+
+def process_file(raw_filename, save_filename):
+
+    data = open_file(raw_filename)
+
+    convert_time_to_timestamp(data)
+
+    rename_columns(data)
+
+    data = save_to_file(data, save_filename)
+
+    return data
 
 
 def main():
