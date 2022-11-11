@@ -31,8 +31,29 @@ def parse_args(args):
 
 
 class NetCDF:
+    """
+    A class to represent NetCDF files.
+
+    Attributes:
+        file (obj): A netCDF file
+        shape (tuple): Dimension of the variables
+    
+    Methods:
+        create(): Generates a NetCDF file with no data, but with
+                  the relevant structure and metadata to hold
+                  UAS data
+        add_metadata(): Adds metadata for a given variable
+        add_data(): Adds data to a given variable or list of variables
+    """
 
     def create(self, args):
+        """
+        Creates an empty (no data) netcdf file with a set structure
+        and metadata, ready to be populated with UAS data.
+
+        Parameters:
+            args: Command line arguments
+        """
 
         filename = os.path.join(args.datadir, args.save_file)
 
@@ -101,6 +122,18 @@ class NetCDF:
 
     def add_metadata(self, var, std_name, long_name, units,
                      coords=None, positive=None, axis=None):
+        """
+        Adds metadata for the given variable.
+
+        Parameters:
+            var: The variable to be edited
+            std_name (str): The standard name
+            long_name (str): The long name
+            units (str): The units
+            coords (optional): The coordinates of the variable
+            positive (str, optional): Which direction is positive
+            axis (str, optional): The axis
+        """
     
         var.standard_name = std_name
         var.long_name = long_name
@@ -116,6 +149,16 @@ class NetCDF:
 
 
     def add_data(self, data, variables):
+        """
+        Adds data to a variable, or a list of variables.
+        !! Variable names must be the same between the netcdf file
+        and the dataframe !!
+
+        Parameters:
+            data (DataFrame): A dataframe holding the variables
+            variables (str/list): A single variable, or list of variables
+                                  to add to the netcdf file
+        """
 
         if not isinstance(variables, list):
             variables = [variables]
