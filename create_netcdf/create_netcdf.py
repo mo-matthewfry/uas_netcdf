@@ -80,6 +80,7 @@ class NetCDF:
         #---GEOPHYSICAL VARIABLES---#
         self.temp = self.file.createVariable('temp', np.float32, self.shape)
         self.rh = self.file.createVariable('rh', np.float32, self.shape)
+        self.pres = self.file.createVariable('pres', np.float32, self.shape)
 
         #---COORDINATE VARIABLE METADATA---#
         self.add_metadata(self.time, "time", "time", "days since 1970-01-01 00:00:00")
@@ -91,6 +92,8 @@ class NetCDF:
         #---GEOPHYSICAL VARIABLE METADATA---#
         self.add_metadata(self.temp, "air_temperature", "bulk temperature of the air",
                           "K", coords="time lon lat z")
+        self.add_metadata(self.pres, "air_pressure", "air pressure",
+                          "Pa", coords="time lon lat z")
         self.add_metadata(self.rh, "relative_humidity", "relative humidity"\
                           + " - percentage water vapour content of air",
                           "%", coords="time lon lat z")
@@ -112,6 +115,15 @@ class NetCDF:
             var.axis = axis
 
 
+    def add_data(self, data, variables):
+
+        if not isinstance(variables, list):
+            variables = [variables]
+
+        for variable in variables:
+            self.file[variable][:] = data[variable]
+
+
 def main():
     """
     main
@@ -123,7 +135,7 @@ def main():
     ncfile.create(args)
 
     print(ncfile.file)
-    print(ncfile.time)
+    print(ncfile.time[:])
 
 
 if __name__ == "__main__":
