@@ -120,5 +120,8 @@ def main():
 
     print(ncfile)
 
+    ncfile.close()
+
+
 if __name__ == "__main__":
     main()
