@@ -37,7 +37,7 @@ class NetCDF:
     Attributes:
         file (obj): A netCDF file
         shape (tuple): Dimension of the variables
-    
+
     Methods:
         create(): Generates a NetCDF file with no data, but with
                   the relevant structure and metadata to hold
@@ -85,7 +85,7 @@ class NetCDF:
             self.trajectory_var.cf_role = "trajectory_id"
             self.trajectory_var.long_name = "trajectory name"
 
-            self.trajectory_info = self.file.createVariable('trajectory_info', 
+            self.trajectory_info = self.file.createVariable('trajectory_info',
                                                             np.int64,
                                                             ('trajectory',))
             self.trajectory_info.long_name = "some kind of trajectory info"
@@ -134,7 +134,7 @@ class NetCDF:
             positive (str, optional): Which direction is positive
             axis (str, optional): The axis
         """
-    
+
         var.standard_name = std_name
         var.long_name = long_name
         var.units = units
