@@ -2,6 +2,19 @@
 # -*- coding: iso-8859-1 -*-
 """
 create_netcdf.py
+
+A NetCDF class with various methods to allow you to
+create an empty template, add variable metadata,
+and also to add data to a variable/variables.
+
+Usage in other files:
+ - Import parse_args and NetCDF class from create_netcdf.
+ - Create a ncfile object.
+ - Use the create() method to create a template netcdf file
+   based upon the passed command line arguements.
+ - Add data (from a separate dataframe or csv) using the add_data()
+   method.
+
 """
 
 import os
