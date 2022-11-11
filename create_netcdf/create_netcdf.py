@@ -82,22 +82,22 @@ class NetCDF:
         self.rh = self.file.createVariable('rh', np.float32, self.shape)
 
         #---COORDINATE VARIABLE METADATA---#
-        self.add_var_metadata(self.time, "time", "time", "days since 1970-01-01 00:00:00")
-        self.add_var_metadata(self.lat, "latitude", "latitude", "degrees_north")
-        self.add_var_metadata(self.lon, "longitude", "longitude", "degrees_east")
-        self.add_var_metadata(self.z, "altitude", "height above mean sea level", "km",
-                              positive="up", axis="Z")
+        self.add_metadata(self.time, "time", "time", "days since 1970-01-01 00:00:00")
+        self.add_metadata(self.lat, "latitude", "latitude", "degrees_north")
+        self.add_metadata(self.lon, "longitude", "longitude", "degrees_east")
+        self.add_metadata(self.z, "altitude", "height above mean sea level", "km",
+                          positive="up", axis="Z")
 
         #---GEOPHYSICAL VARIABLE METADATA---#
-        self.add_var_metadata(self.temp, "air_temperature", "bulk temperature of the air",
-                              "K", coords="time lon lat z")
-        self.add_var_metadata(self.rh, "relative_humidity", "relative humidity"\
-                              + " - percentage water vapour content of air",
-                              "%", coords="time lon lat z")
+        self.add_metadata(self.temp, "air_temperature", "bulk temperature of the air",
+                          "K", coords="time lon lat z")
+        self.add_metadata(self.rh, "relative_humidity", "relative humidity"\
+                          + " - percentage water vapour content of air",
+                          "%", coords="time lon lat z")
 
 
-    def add_var_metadata(self, var, std_name, long_name, units,
-                         coords=None, positive=None, axis=None):
+    def add_metadata(self, var, std_name, long_name, units,
+                     coords=None, positive=None, axis=None):
     
         var.standard_name = std_name
         var.long_name = long_name
@@ -121,6 +121,9 @@ def main():
 
     ncfile = NetCDF()
     ncfile.create(args)
+
+    print(ncfile.file)
+    print(ncfile.time)
 
 
 if __name__ == "__main__":
