@@ -46,7 +46,7 @@ def add_var_metadata(var, std_name, long_name, units,
         var.axis = axis
 
 
-def create_netcdf(args, obs_len, traj_len=None):
+def create(self, args):
 
     filename = os.path.join(args.datadir, args.save_file)
 
@@ -63,21 +63,24 @@ def create_netcdf(args, obs_len, traj_len=None):
     ncfile.flight_id = ""
 
     #---DIMENSIONS---#
-    obs = ncfile.createDimension('obs', obs_len)
+    obs = ncfile.createDimension('obs', args.obs_len)
     shape = ('obs',)
 
     # Set up the optional trajectory dimension if requried
-    if traj_len is not None:
+    if args.traj_len is not None:
 
         #---DIMENSIONS---#
-        trajectory_dim = ncfile.createDimension('trajectory', traj_len)
+        trajectory_dim = ncfile.createDimension('trajectory', args.traj_len)
 
         #---TRAJECTORY VARIABLES---#
-        trajectory_var = ncfile.createVariable('trajectory', 'S1', ('trajectory',))
+        trajectory_var = ncfile.createVariable('trajectory', 'S1',
+                                            ('trajectory',))
         trajectory_var.cf_role = "trajectory_id"
         trajectory_var.long_name = "trajectory name"
 
-        trajectory_info = ncfile.createVariable('trajectory_info', np.int64, ('trajectory',))
+        trajectory_info = ncfile.createVariable('trajectory_info', 
+                                                np.int64,
+                                                ('trajectory',))
         trajectory_info.long_name = "some kind of trajectory info"
 
         shape = ('trajectory', 'obs',)
@@ -97,16 +100,30 @@ def create_netcdf(args, obs_len, traj_len=None):
     add_var_metadata(lat, "latitude", "latitude", "degrees_north")
     add_var_metadata(lon, "longitude", "longitude", "degrees_east")
     add_var_metadata(z, "altitude", "height above mean sea level", "km",
-                     positive="up", axis="Z")
+                    positive="up", axis="Z")
 
     #---GEOPHYSICAL VARIABLE METADATA---#
     add_var_metadata(temp, "air_temperature", "bulk temperature of the air",
-                     "K", coords="time lon lat z")
+                    "K", coords="time lon lat z")
     add_var_metadata(rh, "relative_humidity", "relative humidity"\
-                     + " - percentage water vapour content of air",
-                     "%", coords="time lon lat z")
+                    + " - percentage water vapour content of air",
+                    "%", coords="time lon lat z")
 
-    return ncfile
+    variable = {"time":time,
+                "lat":lat,
+                "lon":lon,
+                "z":z,
+                "temp":temp,
+                "rh":rh,
+                "obs":obs
+            }
+
+    if args.traj_len is not None:
+        variable["trajectory_dim"] = trajectory_dim
+        variable["trajectory_var"] = trajectory_var
+        variable["trajectory_info"] = trajectory_info
+
+    return ncfile, variable
 
 
 def main():
@@ -116,7 +133,7 @@ def main():
 
     args = parse_args(sys.argv[1:])
 
-    ncfile = create_netcdf(args, args.obs_len, args.traj_len)
+    ncfile, variable = create_netcdf(args)
 
     print(ncfile)
 
