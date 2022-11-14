@@ -45,10 +45,11 @@ def parse_args(args):
 
 class NetCDF:
     """
-    A class to represent NetCDF files.
+    A class to represent NetCDF files. Can create, add metadata,
+    or add data.
 
     Attributes:
-        file (obj): A netCDF file
+        file (obj): A netCDF file object
         shape (tuple): Dimension of the variables
 
     Methods:
@@ -161,7 +162,7 @@ class NetCDF:
             var.axis = axis
 
 
-    def add_data(self, data, variables):
+    def add_data(self, data, variables, trajectory_num=None):
         """
         Adds data to a variable, or a list of variables.
         !! Variable names must be the same between the netcdf file
@@ -176,8 +177,12 @@ class NetCDF:
         if not isinstance(variables, list):
             variables = [variables]
 
-        for variable in variables:
-            self.file[variable][:] = data[variable]
+        if trajectory_num is None:
+            for variable in variables:
+                self.file[variable][:] = data[variable]
+        else:
+            for variable in variables:
+                self.file[variable][trajectory_num,:] = data[variable]
 
 
 def main():
